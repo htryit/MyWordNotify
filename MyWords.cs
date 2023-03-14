@@ -14,6 +14,8 @@ namespace MyWordNotify
         List<WordEntity> WordList;
         string WordsFile;
         List<int> HasNotifiedList;
+        int CurrentIndex;
+        int Total;
 
         public MyWords()
         {
@@ -44,13 +46,21 @@ namespace MyWordNotify
                 throw new Exception("No word file.");
             }
 
+           
             var WordJson = File.ReadAllText(WordsFile);
             WordList = JsonConvert.DeserializeObject<List<WordEntity>>(WordJson);
+            CurrentIndex = 0;
+            Total = WordList.Count;
         }
 
         public void UpdateWordStatus()
         {
             SaveWordsToFile();
+        }
+
+        public string GetIndexInfo()
+        {
+            return $" - {CurrentIndex}/{Total}";
         }
 
         public WordEntity GetWord()
@@ -68,6 +78,7 @@ namespace MyWordNotify
                     {
                         HasNotifiedList.Add(RndNum);
                         IsGet = true;
+                        CurrentIndex = RndNum;
                         break;
                     }
                 }

@@ -127,6 +127,8 @@ namespace MyWordNotify
                     break;
             }
 
+            WordStatus = $"{WordStatus}{MyWordHande.GetIndexInfo()}";
+
             new ToastContentBuilder()
                 .AddArgument("MyNotifyId", 20230314)
                 .AddText(Word.Word)
