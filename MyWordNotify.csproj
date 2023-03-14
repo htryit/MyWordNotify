@@ -73,7 +73,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App.ico" />
     <Content Include="AppIcon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
