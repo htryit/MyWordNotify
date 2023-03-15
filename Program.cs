@@ -11,6 +11,9 @@ using NAudio;
 using NAudio.Wave;
 using System.Threading;
 using System.Timers;
+using System.Windows.Forms;
+using System.Reflection;
+using Application = System.Windows.Forms.Application;
 
 namespace MyWordNotify
 {
@@ -26,21 +29,24 @@ namespace MyWordNotify
 
         static EnumRunStatus RunStatus;
 
+        static NotifyIcon MyNotifyIcon;
+
         /// <summary>
         /// Application Status
         /// </summary>
         enum EnumRunStatus
         {
             Running = 0,
-            Pause = 1
+            Pause = 1,
+            Exit = 2
         }
 
         static void Main()
         {
             Console.WriteLine("My Word Notify is running.");
-            Console.WriteLine("Type:\r\n\t exit for quit application.");
-            Console.WriteLine("\t go for continue.");
-            Console.WriteLine("\t pause for pause.");
+
+            InitTray();
+
 
             RunStatus = EnumRunStatus.Running;
 
@@ -60,26 +66,66 @@ namespace MyWordNotify
             }
 
             SendToast(MyWordHande.GetWord());
+
             while (true)
             {
-                var line = Console.ReadLine();
-                if (line == "exit")
+                Application.DoEvents();
+
+                if(RunStatus == EnumRunStatus.Exit)
                 {
-                    Exit();
+                    MyNotifyIcon.Visible = false;
                     break;
                 }
-                else if (line == "go")
-                {
-                    RunStatus = EnumRunStatus.Running;
-                    SendToast(MyWordHande.GetWord());
-                }
-                else if (line == "pause")
-                {
-                    RunStatus = EnumRunStatus.Pause;
-                    Exit();
-                }
+               
             }
         }
+
+        private static void InitTray()
+        {
+            MyNotifyIcon = new NotifyIcon();
+            MyNotifyIcon.Icon = new System.Drawing.Icon("AppIcon.ico");
+            MyNotifyIcon.Text = "MyWordNotify";
+            MyNotifyIcon.Visible = true;
+
+            ContextMenu menu = new ContextMenu();
+            MenuItem item = new MenuItem();
+            item.Text = "Stop";
+            item.Index = 0;
+            item.Click += MenumItem_Click;
+            menu.MenuItems.Add(item);
+
+            MenuItem item3 = new MenuItem();
+            item3.Text = "Exit";
+            item3.Index = 1;
+            item3.Click += MenumItem_Click;
+            menu.MenuItems.Add(item3);
+
+            MyNotifyIcon.ContextMenu = menu;
+        }
+
+        private static void MenumItem_Click(object sender, EventArgs e)
+        {
+            var MenuItem = (MenuItem)sender;
+            var MenuText = MenuItem.Text;
+            switch (MenuText)
+            {
+                case "Exit":
+                    Exit();
+                    RunStatus = EnumRunStatus.Exit;
+                    break;
+                case "Stop":
+                    RunStatus = EnumRunStatus.Pause;
+                    MenuItem.Text = "Start";
+                    Exit();
+                    break;
+                case "Start":
+                    MenuItem.Text = "Stop";
+                    RunStatus = EnumRunStatus.Running;
+                    SendToast(MyWordHande.GetWord());
+                    break;
+            }
+        }
+
 
         private static void Exit()
         {
@@ -202,9 +248,7 @@ namespace MyWordNotify
 
         private static void ToastNotificationManagerCompat_OnActivated(ToastNotificationActivatedEventArgsCompat e)
         {
-
             MyTimer.Stop();
-
             ToastArguments Args = ToastArguments.Parse(e.Argument);
             if (Args.TryGetValue("action", out string Act))
             {
