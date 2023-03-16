@@ -31,6 +31,7 @@ namespace MyWordNotify
 
         static NotifyIcon MyNotifyIcon;
 
+
         /// <summary>
         /// Application Status
         /// </summary>
@@ -43,10 +44,8 @@ namespace MyWordNotify
 
         static void Main()
         {
-            Console.WriteLine("My Word Notify is running.");
 
             InitTray();
-
 
             RunStatus = EnumRunStatus.Running;
 
@@ -67,11 +66,12 @@ namespace MyWordNotify
 
             SendToast(MyWordHande.GetWord());
 
+
             while (true)
             {
                 Application.DoEvents();
 
-                if(RunStatus == EnumRunStatus.Exit)
+                if (RunStatus == EnumRunStatus.Exit)
                 {
                     MyNotifyIcon.Visible = false;
                     break;
@@ -266,6 +266,7 @@ namespace MyWordNotify
             else
             {
                 RunStatus = EnumRunStatus.Pause;
+                MyNotifyIcon.ContextMenu.MenuItems[0].Text = "Start";
             }
         }
     }
