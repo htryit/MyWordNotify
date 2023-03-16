@@ -219,19 +219,16 @@ namespace MyWordNotify
             }
 
 
-            if (!string.IsNullOrEmpty(Word.Audio))
+            if (System.IO.File.Exists(AudioFilePath))
             {
-                if (System.IO.File.Exists(AudioFilePath))
-                {
-                    Thread.Sleep(1500);
+                Thread.Sleep(1500);
 
-                    IWavePlayer waveOutDevice = new WaveOut();
-                    AudioFileReader audioFileReader = new AudioFileReader(AudioFilePath);
+                IWavePlayer waveOutDevice = new WaveOut();
+                AudioFileReader audioFileReader = new AudioFileReader(AudioFilePath);
 
-                    waveOutDevice.Init(audioFileReader);
-                    waveOutDevice.Play();
-                    Thread.Sleep(2000);
-                }
+                waveOutDevice.Init(audioFileReader);
+                waveOutDevice.Play();
+                Thread.Sleep(2000);
             }
 
             if (RunStatus == EnumRunStatus.Running)
